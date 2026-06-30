@@ -12,7 +12,7 @@ class Owner:
         pass
 
     def remove_pet(self, pet):
-        pass
+        self.pets.remove(pet)
 
     def view_pets(self):
         pass
@@ -26,7 +26,8 @@ class Pet:
     tasks: list = field(default_factory=list)
 
     def add_task(self, task):
-        pass
+        task.pet = self
+        self.tasks.append(task)
 
     def remove_task(self, task):
         pass
@@ -41,8 +42,9 @@ class Task:
     priority_level: int
     scheduled_time: datetime
     completed_status: bool = False
+    pet: object = field(default=None)
 
-    def due_task(self):
+    def is_overdue(self):
         pass
 
     def mark_complete(self):
@@ -58,10 +60,10 @@ class Task:
 class Scheduler:
     def __init__(self, owner: Owner):
         self.owner = owner
-        self.tasks = []
 
-    def collect_tasks(self):
-        pass
+    @property
+    def tasks(self):
+        return [task for pet in self.owner.pets for task in pet.tasks]
 
     def create_schedule(self):
         pass
