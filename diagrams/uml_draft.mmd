@@ -1,0 +1,45 @@
+classDiagram
+    class Owner {
+        +String name
+        +String phone_number
+        +List~Pet~ pets
+        +add_pet(pet)
+        +remove_pet(pet)
+        +view_pets()
+    }
+
+    class Pet {
+        +String name
+        +int age
+        +String animal_type
+        +List~Task~ tasks
+        +view_tasks()
+        +add_task(task)
+        +remove_task(task)
+    }
+
+    class Task {
+        +String description
+        +int priority_level
+        +DateTime scheduled_time
+        +bool completed_status
+        +due_task()
+        +mark_complete()
+        +reschedule_task(time)
+        +change_priority(level)
+    }
+
+    class Scheduler {
+        +Owner owner
+        +List~Task~ tasks
+        +collect_tasks()
+        +create_schedule()
+        +view_schedule()
+        +sort_tasks_by_priority()
+        +sort_tasks_by_time()
+    }
+
+    Owner "1" --> "*" Pet : owns
+    Pet "1" --> "*" Task : has
+    Scheduler --> Owner : schedules for
+    Scheduler ..> Task : schedules
