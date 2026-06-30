@@ -9,13 +9,13 @@ class Owner:
         self.pets = []
 
     def add_pet(self, pet):
-        pass
+        self.pets.append(pet)
 
     def remove_pet(self, pet):
         self.pets.remove(pet)
 
     def view_pets(self):
-        pass
+        return self.pets
 
 
 @dataclass
@@ -30,10 +30,10 @@ class Pet:
         self.tasks.append(task)
 
     def remove_task(self, task):
-        pass
+        self.tasks.remove(task)
 
     def view_tasks(self):
-        pass
+        return self.tasks
 
 
 @dataclass
@@ -45,16 +45,16 @@ class Task:
     pet: object = field(default=None)
 
     def is_overdue(self):
-        pass
+        return not self.completed_status and datetime.now() > self.scheduled_time
 
     def mark_complete(self):
-        pass
+        self.completed_status = True
 
     def reschedule_task(self, time: datetime):
-        pass
+        self.scheduled_time = time
 
     def change_priority(self, level: int):
-        pass
+        self.priority_level = level
 
 
 class Scheduler:
@@ -65,14 +65,24 @@ class Scheduler:
     def tasks(self):
         return [task for pet in self.owner.pets for task in pet.tasks]
 
-    def create_schedule(self):
-        pass
+    def filter_by_date(self, date: datetime):
+        return [t for t in self.tasks if t.scheduled_time.date() == date.date()]
 
-    def view_schedule(self):
-        pass
+    def filter_by_status(self, completed: bool):
+        return [t for t in self.tasks if t.completed_status == completed]
 
     def sort_tasks_by_priority(self):
-        pass
+        return sorted(self.tasks, key=lambda t: t.priority_level)
 
     def sort_tasks_by_time(self):
-        pass
+        return sorted(self.tasks, key=lambda t: t.scheduled_time)
+
+    def create_schedule(self):
+        return sorted(self.tasks, key=lambda t: (t.priority_level, t.scheduled_time))
+
+    def view_schedule(self):
+        for task in self.create_schedule():
+            status = "done" if task.completed_status else "pending"
+            overdue = " [OVERDUE]" if task.is_overdue() else ""
+            pet_name = task.pet.name if task.pet else "unknown"
+            print(f"[{status}] Priority {task.priority_level} | {task.scheduled_time:%Y-%m-%d %H:%M} | {task.description} ({pet_name}){overdue}")
