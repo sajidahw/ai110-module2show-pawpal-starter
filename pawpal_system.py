@@ -13,7 +13,11 @@ class Owner:
         self.pets.append(pet)
 
     def remove_pet(self, pet):
-        """Remove a pet and all its tasks from this owner's list."""
+        """Remove a pet; raises ValueError if the pet has pending tasks."""
+        if any(not t.completed_status for t in pet.tasks):
+            raise ValueError(
+                f"{pet.name} has pending tasks. Complete or remove them first."
+            )
         self.pets.remove(pet)
 
     def view_pets(self):
@@ -51,8 +55,10 @@ class Task:
     pet: object = field(default=None)
 
     def is_overdue(self):
-        """Return True if the task is past its scheduled time and not yet complete."""
-        return not self.completed_status and datetime.now() > self.scheduled_time
+        """Return True if past scheduled time and not yet complete."""
+        return (
+            not self.completed_status and datetime.now() > self.scheduled_time
+        )
 
     def mark_complete(self):
         """Mark this task as completed."""
@@ -73,12 +79,17 @@ class Scheduler:
 
     @property
     def tasks(self):
-        """Flatten and return all tasks across every pet owned by this owner."""
-        return [task for pet in self.owner.pets for task in pet.tasks]
+        """Flatten all tasks across every pet owned by this owner."""
+        return [
+            task for pet in self.owner.pets for task in pet.tasks
+        ]
 
     def filter_by_date(self, date: datetime):
         """Return tasks scheduled on the given date."""
-        return [t for t in self.tasks if t.scheduled_time.date() == date.date()]
+        return [
+            t for t in self.tasks
+            if t.scheduled_time.date() == date.date()
+        ]
 
     def filter_by_status(self, completed: bool):
         """Return tasks matching the given completion status."""
@@ -94,7 +105,9 @@ class Scheduler:
 
     def create_schedule(self):
         """Return tasks sorted by priority then time as a tiebreaker."""
-        return sorted(self.tasks, key=lambda t: (t.priority_level, t.scheduled_time))
+        return sorted(
+            self.tasks, key=lambda t: (t.priority_level, t.scheduled_time)
+        )
 
     def view_schedule(self):
         """Print the daily schedule sorted by priority and time."""
@@ -102,4 +115,8 @@ class Scheduler:
             status = "done" if task.completed_status else "pending"
             overdue = " [OVERDUE]" if task.is_overdue() else ""
             pet_name = task.pet.name if task.pet else "unknown"
-            print(f"[{status}] Priority {task.priority_level} | {task.scheduled_time:%Y-%m-%d %H:%M} | {task.description} ({pet_name}){overdue}")
+            print(
+                f"[{status}] Priority {task.priority_level} | "
+                f"{task.scheduled_time:%Y-%m-%d %H:%M} | "
+                f"{task.description} ({pet_name}){overdue}"
+            )
