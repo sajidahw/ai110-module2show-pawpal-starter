@@ -9,12 +9,15 @@ class Owner:
         self.pets = []
 
     def add_pet(self, pet):
+        """Add a pet to this owner's list."""
         self.pets.append(pet)
 
     def remove_pet(self, pet):
+        """Remove a pet and all its tasks from this owner's list."""
         self.pets.remove(pet)
 
     def view_pets(self):
+        """Return the list of pets belonging to this owner."""
         return self.pets
 
 
@@ -26,13 +29,16 @@ class Pet:
     tasks: list = field(default_factory=list)
 
     def add_task(self, task):
+        """Assign a task to this pet and set the back-reference."""
         task.pet = self
         self.tasks.append(task)
 
     def remove_task(self, task):
+        """Remove a specific task from this pet's task list."""
         self.tasks.remove(task)
 
     def view_tasks(self):
+        """Return all tasks assigned to this pet."""
         return self.tasks
 
 
@@ -45,15 +51,19 @@ class Task:
     pet: object = field(default=None)
 
     def is_overdue(self):
+        """Return True if the task is past its scheduled time and not yet complete."""
         return not self.completed_status and datetime.now() > self.scheduled_time
 
     def mark_complete(self):
+        """Mark this task as completed."""
         self.completed_status = True
 
     def reschedule_task(self, time: datetime):
+        """Update the scheduled time for this task."""
         self.scheduled_time = time
 
     def change_priority(self, level: int):
+        """Update the priority level for this task."""
         self.priority_level = level
 
 
@@ -63,24 +73,31 @@ class Scheduler:
 
     @property
     def tasks(self):
+        """Flatten and return all tasks across every pet owned by this owner."""
         return [task for pet in self.owner.pets for task in pet.tasks]
 
     def filter_by_date(self, date: datetime):
+        """Return tasks scheduled on the given date."""
         return [t for t in self.tasks if t.scheduled_time.date() == date.date()]
 
     def filter_by_status(self, completed: bool):
+        """Return tasks matching the given completion status."""
         return [t for t in self.tasks if t.completed_status == completed]
 
     def sort_tasks_by_priority(self):
+        """Return tasks sorted by priority level ascending."""
         return sorted(self.tasks, key=lambda t: t.priority_level)
 
     def sort_tasks_by_time(self):
+        """Return tasks sorted by scheduled time ascending."""
         return sorted(self.tasks, key=lambda t: t.scheduled_time)
 
     def create_schedule(self):
+        """Return tasks sorted by priority then time as a tiebreaker."""
         return sorted(self.tasks, key=lambda t: (t.priority_level, t.scheduled_time))
 
     def view_schedule(self):
+        """Print the daily schedule sorted by priority and time."""
         for task in self.create_schedule():
             status = "done" if task.completed_status else "pending"
             overdue = " [OVERDUE]" if task.is_overdue() else ""
