@@ -69,17 +69,17 @@ Sample test output:
 
 ```
 python -m pytest -v
-=== test session starts ===
+====== test session starts ======
 platform darwin -- .venv/bin/python
 plugins: anyio-4.13.0
 collected 4 items
 
-tests/test_pawpal.py::test_mark_complete_changes_status PASSED                    [ 25%]
-tests/test_pawpal.py::test_add_task_increases_pet_task_count PASSED               [ 50%]
+tests/test_pawpal.py::test_mark_complete_changes_status PASSED                   [ 25%]
+tests/test_pawpal.py::test_add_task_increases_pet_task_count PASSED              [ 50%]
 tests/test_pawpal.py::test_sort_tasks_by_priority_returns_ascending_order PASSED [ 75%]
 tests/test_pawpal.py::test_filter_by_status_returns_only_matching_tasks PASSED  [100%]
 
-=== 4 passed in 0.01s ===
+====== 4 passed in 0.01s ======
 ```
 
 ## 📐 Smarter Scheduling
